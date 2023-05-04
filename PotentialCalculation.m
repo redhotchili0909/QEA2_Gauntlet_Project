@@ -1,19 +1,27 @@
 clear
 clf
 
+load("finalgaunlet_map.mat")
+
 %Potential Contour Plot
-x_coord = -1.200:0.1:1.207;
-y_coord = -1.213:0.1:1.092;
+xplot = all_points(1,:);
+yplot = all_points(2,:);
+
+x_coord = -1:0.1:1;
+y_coord = -1:0.1:1;
+
 j=1;
 
-for  x = -1.200:0.1:1.207
+for  x = -1:0.1:1
     i=1;
-    for y = -1.213:0.1:1.092
+    for y = -1:0.1:1
         [pot(i,j),~]=pointDetail(x,y);
         i = i +1;
     end
     j = j +1;
 end
+
+hold on
 contour(x_coord,y_coord,pot,20)
 
 %Gradient Quiver Plot
@@ -21,10 +29,10 @@ contour(x_coord,y_coord,pot,20)
 quiver(x_coord,y_coord,gradx_test,grady_test)
 
 %Gradient Decent Calculation
-delta = 0.41;
+delta = 0.5;
 lambda = 0.09;
 tolerance = 0.01;
-n_max = 20;
+n_max = 5;
 
 r_i = [-0.838;-0.933];
 points = r_i;
@@ -54,10 +62,10 @@ clear
 %[sensros,vels]=neato()
 
 pause(10) 
-delta = 0.41;
+delta = 0.5;
 lambda = 0.09;
 tolerance = 0.01;
-n_max = 20;
+n_max = 5;
 r_i = [-0.838;-0.933];
 n= 0;
 grad_origin = [-1; 0];
@@ -125,16 +133,13 @@ end
 
 function [pot,gradient] = pointDetail(x,y)
         object_strength = 1;
-        wall_strength = 2;
+        wall_strength = 50;
         circle_strength = 100;
-
-        %Surronding Walls and BoB
-        [pot1,grad1]=vertical_linePotential(wall_strength,-1.200,x,y,-1.213,1.092);
-        [pot2,grad2]=vertical_linePotential(wall_strength,1.207,x,y,-1.213,1.092);
-        [pot3,grad3]=sloped_linePotential(wall_strength,0,1.092,x,y,-1.200,1.207);
-        [pot4,grad4]=sloped_linePotential(wall_strength,0,-1.213,x,y,-1.200,1.207);
+        [pot1,grad1]=vertical_linePotential(object_strength,-1.200,x,y,-1.213,1.092);
+        [pot2,grad2]=vertical_linePotential(object_strength,1.207,x,y,-1.1213,1.092);
+        [pot3,grad3]=sloped_linePotential(object_strength,0,1.092,x,y,-1.200,1.207);
+        [pot4,grad4]=sloped_linePotential(object_strength+1.02,0,-1.213,x,y,-1.200,1.207);
         [pot5,grad5]=circlePotential(circle_strength,0.01,x,y,1.031,-0.562);
-        
         % Top left object
         top_left_1 = [-0.673,0.190];
         top_left_2 = [-0.255,0.609];
@@ -209,8 +214,8 @@ function [pot,gradient] = pointDetail(x,y)
         [right_line_m,right_line_b] = slope_intercept(top_right_4,top_right_2);
         [pot21,grad21] = sloped_linePotential(object_strength,right_line_m,right_line_b,x,y,0.568,0.687);
 
-        % Total Potential/Gradient
+        % Small objects
+
         pot = pot1+pot2+pot3+pot4-pot5+pot6+pot7+pot8+pot9+pot10+pot11+pot12+pot13+pot14+pot15+pot16+pot17+pot18+pot19+pot20+pot21;
         gradient =grad1+grad2+grad3+grad4-grad5+grad6+grad7+grad8+grad9+grad10+grad11+grad12+grad13+grad14+grad15+grad16+grad17+grad18+grad19+grad20+grad21;
 end
-
